@@ -14,8 +14,6 @@ const props = defineProps<{
   shiftTypes: ShiftType[]
   date: DateTime
 }>()
-
-const weekDay = props.date.weekday
 </script>
 
 <template>
@@ -26,6 +24,7 @@ const weekDay = props.date.weekday
   </div>
   <div
     v-for="(shiftType, i) in shiftTypes"
+    :key="shiftType.id"
     class="shiftContainer"
     :style="{ gridRow: props.initialRow + 1 + i }"
   ></div>

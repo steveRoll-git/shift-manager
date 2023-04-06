@@ -8,16 +8,22 @@ const props = defineProps<{
   shiftTypes: ShiftType[]
   initialDate: DateTime
 }>()
+
+// Returns an array of the days visible in this editor
+function getDaysList(): DateTime[] {
+  return Array.from({ length: props.numColumns }, (i, j) => props.initialDate.plus({days: j}))
+}
 </script>
 
 <template>
   <div class="shiftEditor">
     <DayContainer
-      v-for="(_, i) in props.numColumns"
+      v-for="(date, i) in getDaysList()"
+      :key="date.toString()"
       :column="i + 1"
       :initial-row="1"
       :shift-types="props.shiftTypes"
-      :date="props.initialDate.plus({ day: i })"
+      :date="date"
     ></DayContainer>
   </div>
 </template>

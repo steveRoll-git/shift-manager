@@ -8,7 +8,7 @@ import ShiftEditor from "@/components/shiftEditor/ShiftEditor.vue"
     <ShiftEditor
       :initialDate="DateTime.local(2023, 4, 2)"
       :numColumns="7"
-      :shiftTypes="[{}, {}, {}]"
+      :shiftTypes="[{ id: 'asdf' }, { id: 'dfgh' }, { id: 'asdfas' }]"
     />
   </main>
 </template>

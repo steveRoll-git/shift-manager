@@ -1,1 +1,3 @@
-export default interface ShiftType {}
+export default interface ShiftType {
+  id: string
+}

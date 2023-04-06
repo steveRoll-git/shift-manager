@@ -21,7 +21,7 @@ const rtlLocales = [
 ]
 
 export default function isRtl(locale: string): boolean {
-  for (let l of rtlLocales) {
+  for (const l of rtlLocales) {
     if (locale.includes(l)) {
       return true
     }

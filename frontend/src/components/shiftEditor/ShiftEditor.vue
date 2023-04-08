@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import DayContainer from "./DayContainer.vue"
-import type ShiftType from "./ShiftType"
+import type { ShiftType } from "@/types/ShiftType"
+import type { Schedule } from "@/types/Schedule"
 import type { DateTime } from "luxon"
 
 const props = defineProps<{
   numColumns: number
-  shiftTypes: ShiftType[]
+  schedule: Schedule
   initialDate: DateTime
 }>()
 
 // Returns an array of the days visible in this editor
 function getDaysList(): DateTime[] {
-  return Array.from({ length: props.numColumns }, (i, j) => props.initialDate.plus({days: j}))
+  return Array.from({ length: props.numColumns }, (i, j) => props.initialDate.plus({ days: j }))
 }
 </script>
 
@@ -22,7 +23,7 @@ function getDaysList(): DateTime[] {
       :key="date.toString()"
       :column="i + 1"
       :initial-row="1"
-      :shift-types="props.shiftTypes"
+      :shift-types="props.schedule.shiftTypes"
       :date="date"
     ></DayContainer>
   </div>
@@ -34,7 +35,7 @@ function getDaysList(): DateTime[] {
   column-gap: 5px;
   grid-auto-flow: column;
   grid-template-columns: repeat(v-bind("props.numColumns"), 120px);
-  grid-template-rows: repeat(calc(v-bind("props.shiftTypes.length") + 1), max-content);
+  grid-template-rows: repeat(calc(v-bind("props.schedule.shiftTypes.length") + 1), max-content);
   user-select: none;
 
   font-size: 20px;

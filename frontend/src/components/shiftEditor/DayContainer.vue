@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n"
 import type { DateTime } from "luxon"
-import type ShiftType from "./ShiftType"
+import type { ShiftType } from "@/types/ShiftType"
 
 const { t, locale } = useI18n({
   inheritLocale: true,

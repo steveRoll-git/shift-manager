@@ -4,6 +4,7 @@ import type { ShiftType } from "./ShiftType"
 export interface Schedule {
   id: number
   name: string
+  members: Member[]
   shiftTypes: ShiftType[]
   /**
    * Map where key is valueOf a date, and value is a map of `ShiftType`'s

@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n"
 import type { DateTime } from "luxon"
-import type { ShiftType } from "@/types/ShiftType"
 import PlusButton from "./PlusButton.vue"
 import NameBlock from "./NameBlock.vue"
 import type { Member } from "@/types/Member"
+import { reactive } from "vue"
+import type { Schedule } from "@/types/Schedule"
+import MemberSelector from "./MemberSelector.vue"
+import { vOnClickOutside } from "@vueuse/components"
 
 const { t, locale } = useI18n({
   inheritLocale: true,
@@ -14,10 +17,22 @@ const { t, locale } = useI18n({
 const props = defineProps<{
   column: number
   initialRow: number
-  shiftTypes: ShiftType[]
+  schedule: Schedule
   date: DateTime
   shiftsMap: Map<number, Member[]>
 }>()
+
+const editingShift = reactive<{
+  editing: boolean
+  shiftType?: number
+}>({
+  editing: false
+})
+
+function plusButtonClicked(shiftType: number) {
+  editingShift.editing = true
+  editingShift.shiftType = shiftType
+}
 </script>
 
 <template>
@@ -27,13 +42,27 @@ const props = defineProps<{
     {{ date.day }}/{{ date.month }}
   </div>
   <div
-    v-for="(shiftType, i) in shiftTypes"
+    v-for="(shiftType, i) in schedule.shiftTypes"
     :key="shiftType.id"
     class="shiftContainer"
     :style="{ gridRow: props.initialRow + 1 + i }"
   >
-    <NameBlock v-for="member in props.shiftsMap.get(shiftType.id)" :key="member.id" :member="member"></NameBlock>
-    <PlusButton />
+    <NameBlock
+      v-for="member in props.shiftsMap.get(shiftType.id)"
+      :key="member.id"
+      :member="member"
+    ></NameBlock>
+    <PlusButton @click="plusButtonClicked(shiftType.id)" />
+
+    <Transition name="slide-fade">
+      <MemberSelector
+        v-if="editingShift.editing && editingShift.shiftType == shiftType.id"
+        :schedule="schedule"
+        :date="props.date"
+        :shift-type="shiftType"
+        v-on-click-outside="() => (editingShift.editing = false)"
+      />
+    </Transition>
   </div>
 </template>
 
@@ -57,7 +86,7 @@ const props = defineProps<{
 
 .dayBackground {
   grid-column: v-bind("props.column");
-  grid-row: v-bind("props.initialRow") / span calc(v-bind("props.shiftTypes.length") + 1);
+  grid-row: v-bind("props.initialRow") / span calc(v-bind("props.schedule.shiftTypes.length") + 1);
   background-color: rgb(116, 116, 116);
   border-radius: 10px;
 }

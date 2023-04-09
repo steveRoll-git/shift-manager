@@ -1,7 +1,9 @@
 import { reactive } from "vue"
 import { defineStore } from "pinia"
 import type { Schedule } from "@/types/Schedule"
-import { DateTime } from "luxon"
+import type { DateTime } from "luxon"
+import type { ShiftType } from "@/types/ShiftType"
+import type { Member } from "@/types/Member"
 
 export const useSchedulesStore = defineStore("schedules", () => {
   const schedules: Map<number, Schedule> = new Map()
@@ -20,26 +22,36 @@ export const useSchedulesStore = defineStore("schedules", () => {
         reactive({
           id,
           name: "test",
+          members: [
+            { id: 4, name: "Anna" },
+            { id: 3, name: "Josh" },
+            { id: 2, name: "Ori" }
+          ],
           shiftTypes: [{ id: 1 }, { id: 2 }, { id: 3 }],
-          shifts: new Map([
-            [
-              DateTime.fromObject({ year: 2023, month: 4, day: 5 }).valueOf(),
-              new Map([
-                [
-                  1,
-                  [
-                    { id: 4, name: "Anna" },
-                    { id: 3, name: "Wow" }
-                  ]
-                ]
-              ])
-            ]
-          ])
+          shifts: new Map()
         })
       )
     }
     return schedules.get(id)
   }
 
-  return { getSchedule }
+  /**
+   * Returns a reactive list of members in the specified schedule, date and shift type.
+   * @param schedule
+   * @param date
+   * @param shiftType
+   */
+  function getMemberList(schedule: Schedule, date: DateTime, shiftType: ShiftType): Member[] {
+    const rSchedule = getSchedule(schedule.id)
+    if (!rSchedule?.shifts.has(date.valueOf())) {
+      rSchedule?.shifts.set(date.valueOf(), new Map())
+    }
+    const shiftMap = rSchedule?.shifts.get(date.valueOf())!
+    if (!shiftMap.has(shiftType.id)) {
+      shiftMap.set(shiftType.id, [])
+    }
+    return shiftMap.get(shiftType.id)!
+  }
+
+  return { getSchedule, getMemberList }
 })

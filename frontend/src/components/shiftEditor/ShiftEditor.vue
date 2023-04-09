@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import DayContainer from "./DayContainer.vue"
-import type { ShiftType } from "@/types/ShiftType"
 import type { Schedule } from "@/types/Schedule"
 import type { DateTime } from "luxon"
 
@@ -23,7 +22,7 @@ function getDaysList(): DateTime[] {
       :key="date.valueOf()"
       :column="i + 1"
       :initial-row="1"
-      :shift-types="props.schedule.shiftTypes"
+      :schedule="schedule"
       :date="date"
       :shifts-map="props.schedule.shifts.get(date.valueOf()) ?? new Map()"
     ></DayContainer>

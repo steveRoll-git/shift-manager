@@ -12,4 +12,8 @@ const props = defineProps<{
   </div>
 </template>
 
-<style></style>
+<style>
+.nameBlock {
+  width: fit-content;
+}
+</style>

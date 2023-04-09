@@ -2,6 +2,9 @@
 import { useI18n } from "vue-i18n"
 import type { DateTime } from "luxon"
 import type { ShiftType } from "@/types/ShiftType"
+import PlusButton from "./PlusButton.vue"
+import NameBlock from "./NameBlock.vue"
+import type { Member } from "@/types/Member"
 
 const { t, locale } = useI18n({
   inheritLocale: true,
@@ -13,6 +16,7 @@ const props = defineProps<{
   initialRow: number
   shiftTypes: ShiftType[]
   date: DateTime
+  shiftsMap: Map<number, Member[]>
 }>()
 </script>
 
@@ -27,7 +31,10 @@ const props = defineProps<{
     :key="shiftType.id"
     class="shiftContainer"
     :style="{ gridRow: props.initialRow + 1 + i }"
-  ></div>
+  >
+    <NameBlock v-for="member in props.shiftsMap.get(shiftType.id)" :key="member.id" :member="member"></NameBlock>
+    <PlusButton />
+  </div>
 </template>
 
 <style scoped>

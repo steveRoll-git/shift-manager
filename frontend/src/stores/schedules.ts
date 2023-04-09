@@ -1,6 +1,7 @@
 import { reactive } from "vue"
 import { defineStore } from "pinia"
 import type { Schedule } from "@/types/Schedule"
+import { DateTime } from "luxon"
 
 export const useSchedulesStore = defineStore("schedules", () => {
   const schedules: Map<number, Schedule> = new Map()
@@ -20,7 +21,20 @@ export const useSchedulesStore = defineStore("schedules", () => {
           id,
           name: "test",
           shiftTypes: [{ id: 1 }, { id: 2 }, { id: 3 }],
-          shifts: new Map()
+          shifts: new Map([
+            [
+              DateTime.fromObject({ year: 2023, month: 4, day: 5 }).valueOf(),
+              new Map([
+                [
+                  1,
+                  [
+                    { id: 4, name: "Anna" },
+                    { id: 3, name: "Wow" }
+                  ]
+                ]
+              ])
+            ]
+          ])
         })
       )
     }

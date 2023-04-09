@@ -20,11 +20,12 @@ function getDaysList(): DateTime[] {
   <div class="shiftEditor">
     <DayContainer
       v-for="(date, i) in getDaysList()"
-      :key="date.toString()"
+      :key="date.valueOf()"
       :column="i + 1"
       :initial-row="1"
       :shift-types="props.schedule.shiftTypes"
       :date="date"
+      :shifts-map="props.schedule.shifts.get(date.valueOf()) ?? new Map()"
     ></DayContainer>
   </div>
 </template>

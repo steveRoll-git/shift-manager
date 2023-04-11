@@ -4,22 +4,25 @@ import type { DateTime } from "luxon"
 import PlusButton from "./PlusButton.vue"
 import NameBlock from "./NameBlock.vue"
 import type { Member } from "@/types/Member"
-import { reactive } from "vue"
+import { computed, reactive } from "vue"
 import type { Schedule } from "@/types/Schedule"
 import MemberSelector from "./MemberSelector.vue"
 import { vOnClickOutside } from "@vueuse/components"
+import { useSchedulesStore } from "@/stores/schedules"
+import type { ShiftType } from "@/types/ShiftType"
 
-const { t, locale } = useI18n({
+const { t } = useI18n({
   inheritLocale: true,
   useScope: "local"
 })
+
+const { getMemberList } = useSchedulesStore()
 
 const props = defineProps<{
   column: number
   initialRow: number
   schedule: Schedule
   date: DateTime
-  shiftsMap: Map<number, Member[]>
 }>()
 
 const editingShift = reactive<{
@@ -29,9 +32,16 @@ const editingShift = reactive<{
   editing: false
 })
 
+const shiftsMap = computed(() => props.schedule.shifts.get(props.date.valueOf()) ?? new Map())
+
 function plusButtonClicked(shiftType: number) {
   editingShift.editing = true
   editingShift.shiftType = shiftType
+}
+
+function removeMember(shiftType: ShiftType, member: Member) {
+  const memberList = getMemberList(props.schedule, props.date, shiftType)
+  memberList.splice(memberList.indexOf(member), 1)
 }
 </script>
 
@@ -48,9 +58,11 @@ function plusButtonClicked(shiftType: number) {
     :style="{ gridRow: props.initialRow + 1 + i }"
   >
     <NameBlock
-      v-for="member in props.shiftsMap.get(shiftType.id)"
+      v-for="member in shiftsMap.get(shiftType.id)"
       :key="member.id"
       :member="member"
+      :show-remove-button="true"
+      @remove-clicked="removeMember(shiftType, member)"
     ></NameBlock>
     <PlusButton @click="plusButtonClicked(shiftType.id)" />
 

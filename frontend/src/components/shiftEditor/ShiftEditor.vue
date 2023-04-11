@@ -24,7 +24,6 @@ function getDaysList(): DateTime[] {
       :initial-row="1"
       :schedule="schedule"
       :date="date"
-      :shifts-map="props.schedule.shifts.get(date.valueOf()) ?? new Map()"
     ></DayContainer>
   </div>
 </template>

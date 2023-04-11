@@ -27,9 +27,6 @@ const otherMembers = computed(() =>
 function addMember(member: Member) {
   memberList.value.push(member)
 }
-function removeMember(member: Member) {
-  memberList.value.splice(memberList.value.indexOf(member), 1)
-}
 </script>
 
 <template>
@@ -41,15 +38,6 @@ function removeMember(member: Member) {
       style="cursor: pointer"
       @click="addMember(member)"
     />
-    <div class="memberSeparator" v-if="memberList.length > 0 && otherMembers.length > 0"></div>
-    <div v-for="member in memberList" :key="member.id" style="display: flex; align-items: center">
-      <img
-        src="@/assets/remove.svg"
-        style="width: calc(var(--name-font-size) * 1.3); cursor: pointer"
-        @click="removeMember(member)"
-      />
-      <NameBlock :member="member" style="opacity: 0.5" />
-    </div>
   </div>
 </template>
 

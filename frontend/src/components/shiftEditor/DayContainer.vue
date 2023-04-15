@@ -36,9 +36,27 @@ const shiftsMap: ComputedRef<Map<number, Member[]>> = computed(
   () => props.schedule.shifts.get(props.date.valueOf()) ?? new Map()
 )
 
-function plusButtonClicked(shiftType: number) {
+function plusButtonClicked(shiftType: ShiftType) {
+  // Don't open the member selector if all members have been added
+  if (
+    getMemberList(props.schedule, props.date, shiftType).length == props.schedule.members.length
+  ) {
+    return
+  }
   editingShift.editing = true
-  editingShift.shiftType = shiftType
+  editingShift.shiftType = shiftType.id
+}
+
+function addMember(shiftType: ShiftType, member: Member) {
+  const memberList = getMemberList(props.schedule, props.date, shiftType)
+  memberList.push(member)
+  // Close the member selector when all members have been added
+  if (
+    shiftType.id == editingShift.shiftType &&
+    memberList.length == props.schedule.members.length
+  ) {
+    editingShift.editing = false
+  }
 }
 
 function removeMember(shiftType: ShiftType, member: Member) {
@@ -66,7 +84,7 @@ function removeMember(shiftType: ShiftType, member: Member) {
       :show-remove-button="true"
       @remove-clicked="removeMember(shiftType, member)"
     ></NameBlock>
-    <PlusButton @click="plusButtonClicked(shiftType.id)" />
+    <PlusButton @click="plusButtonClicked(shiftType)" />
 
     <Transition name="slide-fade">
       <MemberSelector
@@ -74,6 +92,7 @@ function removeMember(shiftType: ShiftType, member: Member) {
         :schedule="schedule"
         :date="props.date"
         :shift-type="shiftType"
+        @member-click="addMember(shiftType, $event)"
         v-on-click-outside="() => (editingShift.editing = false)"
       />
     </Transition>

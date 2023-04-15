@@ -13,6 +13,10 @@ const props = defineProps<{
   shiftType: ShiftType
 }>()
 
+const emit = defineEmits<{
+  (e: "memberClick", member: Member): void
+}>()
+
 const { getMemberList } = useSchedulesStore()
 
 const memberList = computed(() => getMemberList(props.schedule, props.date, props.shiftType))
@@ -23,10 +27,6 @@ const memberList = computed(() => getMemberList(props.schedule, props.date, prop
 const otherMembers = computed(() =>
   props.schedule.members.filter((m) => !memberList.value.includes(m))
 )
-
-function addMember(member: Member) {
-  memberList.value.push(member)
-}
 </script>
 
 <template>
@@ -36,7 +36,7 @@ function addMember(member: Member) {
       :key="member.id"
       :member="member"
       style="cursor: pointer"
-      @click="addMember(member)"
+      @click="emit('memberClick', member)"
     />
   </div>
 </template>

@@ -3,7 +3,7 @@ import { defineStore } from "pinia"
 import type { Schedule } from "@/types/Schedule"
 import type { DateTime } from "luxon"
 import type { ShiftType } from "@/types/ShiftType"
-import type { Member } from "@/types/Member"
+import type { GetScheduleError } from "@/types/errors/GetScheduleError"
 
 export const useSchedulesStore = defineStore("schedules", () => {
   const schedules: Map<number, Schedule> = new Map()
@@ -14,39 +14,39 @@ export const useSchedulesStore = defineStore("schedules", () => {
    * @param id The id of the schedule
    * @returns A reactive object that represents the schedule.
    */
-  function getSchedule(id: number) {
+  async function getSchedule(id: number): Promise<Schedule | GetScheduleError> {
     if (!schedules.has(id)) {
-      // TODO fetching code
+      const response = await fetch(`/api/schedules/${id}`)
+      if (response.status == 404) {
+        return "scheduleNotFound"
+      } else if (!response.ok) {
+        return "serverError"
+      }
+      const schedule = await response.json()
       schedules.set(
         id,
         reactive({
-          id,
-          name: "test",
-          members: [
-            { id: 4, name: "Anna" },
-            { id: 3, name: "Josh" },
-            { id: 2, name: "Ori" }
-          ],
-          shiftTypes: [{ id: 1 }, { id: 2 }, { id: 3 }],
+          ...schedule,
           shifts: new Map()
         })
       )
     }
-    return schedules.get(id)
+    return schedules.get(id)!
   }
 
   /**
    * Returns a reactive list of members in the specified schedule, date and shift type.
+   *
+   * The given `schedule` must be reactive.
    * @param schedule
    * @param date
    * @param shiftType
    */
-  function getMemberList(schedule: Schedule, date: DateTime, shiftType: ShiftType): Member[] {
-    const rSchedule = getSchedule(schedule.id)
-    if (!rSchedule?.shifts.has(date.valueOf())) {
-      rSchedule?.shifts.set(date.valueOf(), new Map())
+  function getMemberList(schedule: Schedule, date: DateTime, shiftType: ShiftType) {
+    if (!schedule.shifts.has(date.valueOf())) {
+      schedule.shifts.set(date.valueOf(), new Map())
     }
-    const shiftMap = rSchedule?.shifts.get(date.valueOf())!
+    const shiftMap = schedule.shifts.get(date.valueOf())!
     if (!shiftMap.has(shiftType.id)) {
       shiftMap.set(shiftType.id, [])
     }

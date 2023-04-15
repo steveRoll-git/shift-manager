@@ -1,6 +1,7 @@
 @import "./base.css";
 @import "./shiftEditor.css";
 @import "./slideFade.css";
+@import "./errorBox.css";
 
 #app {
   display: flex;

@@ -4,7 +4,7 @@ import type { DateTime } from "luxon"
 import PlusButton from "./PlusButton.vue"
 import NameBlock from "./NameBlock.vue"
 import type { Member } from "@/types/Member"
-import { computed, reactive } from "vue"
+import { computed, reactive, type ComputedRef } from "vue"
 import type { Schedule } from "@/types/Schedule"
 import MemberSelector from "./MemberSelector.vue"
 import { vOnClickOutside } from "@vueuse/components"
@@ -32,7 +32,9 @@ const editingShift = reactive<{
   editing: false
 })
 
-const shiftsMap = computed(() => props.schedule.shifts.get(props.date.valueOf()) ?? new Map())
+const shiftsMap: ComputedRef<Map<number, Member[]>> = computed(
+  () => props.schedule.shifts.get(props.date.valueOf()) ?? new Map()
+)
 
 function plusButtonClicked(shiftType: number) {
   editingShift.editing = true

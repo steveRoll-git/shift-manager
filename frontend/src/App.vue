@@ -18,7 +18,7 @@ if (isRtl(locale.value as unknown as string)) {
     <div class="wrapper">
       <nav>
         <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/editor">Editor</RouterLink>
+        <RouterLink to="/schedule/2">Test Schedule</RouterLink>
       </nav>
     </div>
   </header>

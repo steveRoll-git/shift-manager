@@ -32,15 +32,13 @@ const editingShift = reactive<{
   editing: false
 })
 
-const shiftsMap: ComputedRef<Map<number, Member[]>> = computed(
+const shiftsMap: ComputedRef<Map<number, Set<Member>>> = computed(
   () => props.schedule.shifts.get(props.date.valueOf()) ?? new Map()
 )
 
 function plusButtonClicked(shiftType: ShiftType) {
   // Don't open the member selector if all members have been added
-  if (
-    getMemberList(props.schedule, props.date, shiftType).length == props.schedule.members.length
-  ) {
+  if (getMemberList(props.schedule, props.date, shiftType).size == props.schedule.members.length) {
     return
   }
   editingShift.editing = true
@@ -49,19 +47,16 @@ function plusButtonClicked(shiftType: ShiftType) {
 
 function addMember(shiftType: ShiftType, member: Member) {
   const memberList = getMemberList(props.schedule, props.date, shiftType)
-  memberList.push(member)
+  memberList.add(member)
   // Close the member selector when all members have been added
-  if (
-    shiftType.id == editingShift.shiftType &&
-    memberList.length == props.schedule.members.length
-  ) {
+  if (shiftType.id == editingShift.shiftType && memberList.size == props.schedule.members.length) {
     editingShift.editing = false
   }
 }
 
 function removeMember(shiftType: ShiftType, member: Member) {
   const memberList = getMemberList(props.schedule, props.date, shiftType)
-  memberList.splice(memberList.indexOf(member), 1)
+  memberList.delete(member)
 }
 </script>
 

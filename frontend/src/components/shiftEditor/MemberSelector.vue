@@ -24,9 +24,7 @@ const memberList = computed(() => getMemberList(props.schedule, props.date, prop
 /**
  * List of members that _aren't_ currently in this shift
  */
-const otherMembers = computed(() =>
-  props.schedule.members.filter((m) => !memberList.value.includes(m))
-)
+const otherMembers = computed(() => props.schedule.members.filter((m) => !memberList.value.has(m)))
 </script>
 
 <template>

@@ -2,6 +2,9 @@
 import DayContainer from "./DayContainer.vue"
 import type { Schedule } from "@/types/Schedule"
 import type { DateTime } from "luxon"
+import { useSchedulesStore } from "@/stores/schedules"
+
+const { fetchShifts } = useSchedulesStore()
 
 const props = defineProps<{
   numColumns: number
@@ -13,6 +16,8 @@ const props = defineProps<{
 function getDaysList(): DateTime[] {
   return Array.from({ length: props.numColumns }, (i, j) => props.initialDate.plus({ days: j }))
 }
+
+fetchShifts(props.schedule, props.initialDate, props.initialDate.plus({ days: props.numColumns }))
 </script>
 
 <template>

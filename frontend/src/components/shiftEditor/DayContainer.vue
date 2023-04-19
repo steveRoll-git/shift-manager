@@ -63,8 +63,8 @@ function removeMember(shiftType: ShiftType, member: Member) {
 <template>
   <div class="dayBackground"></div>
   <div class="dayHeader">
-    <span class="weekDayTitle">{{ t(`weekDays[${props.date.weekday % 7}]`) }}</span>
     {{ date.day }}/{{ date.month }}
+    <span class="weekDayTitle">{{ t(`weekDays[${props.date.weekday % 7}]`) }}</span>
   </div>
   <div
     v-for="(shiftType, i) in schedule.shiftTypes"
@@ -98,7 +98,6 @@ function removeMember(shiftType: ShiftType, member: Member) {
 .weekDayTitle {
   font-size: 75%;
   line-height: 75%;
-  display: block;
   margin-top: 5px;
 }
 
@@ -111,6 +110,7 @@ function removeMember(shiftType: ShiftType, member: Member) {
   padding-left: 10px;
   padding-right: 10px;
   margin-top: var(--day-grid-gap);
+  padding-top: 5px;
 }
 
 .dayBackground {

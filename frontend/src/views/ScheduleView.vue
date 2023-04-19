@@ -40,7 +40,7 @@ onMounted(async () => {
       v-else-if="schedule"
       :initialDate="DateTime.local(2023, 3, 26)"
       :numColumns="7"
-      :numRows="4"
+      :numRows="5"
       :schedule="schedule"
     />
     <div v-else-if="error" class="errorBox">

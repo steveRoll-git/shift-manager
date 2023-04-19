@@ -3,7 +3,7 @@ import DayContainer from "./DayContainer.vue"
 import type { Schedule } from "@/types/Schedule"
 import type { DateTime } from "luxon"
 import { useSchedulesStore } from "@/stores/schedules"
-import { ref } from "vue"
+import { ref, watch } from "vue"
 
 const { fetchShifts } = useSchedulesStore()
 
@@ -30,10 +30,16 @@ function incrementWeek() {
   initialDate.value = initialDate.value.plus({ weeks: 1 })
 }
 
-fetchShifts(
-  props.schedule,
-  initialDate.value,
-  initialDate.value.plus({ days: props.numColumns * props.numRows })
+watch(
+  initialDate,
+  () => {
+    fetchShifts(
+      props.schedule,
+      initialDate.value,
+      initialDate.value.plus({ days: props.numColumns * props.numRows })
+    )
+  },
+  { immediate: true }
 )
 </script>
 

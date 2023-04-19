@@ -105,11 +105,12 @@ function removeMember(shiftType: ShiftType, member: Member) {
 .dayHeader {
   background-color: rgb(41, 170, 245);
   margin: 0 0 var(--shift-sections-gap);
-  grid-row: 1;
+  grid-row: v-bind("props.initialRow");
   grid-column: v-bind("props.column");
   border-radius: 9px 9px 0 0;
   padding-left: 10px;
   padding-right: 10px;
+  margin-top: var(--day-grid-gap);
 }
 
 .dayBackground {
@@ -117,6 +118,7 @@ function removeMember(shiftType: ShiftType, member: Member) {
   grid-row: v-bind("props.initialRow") / span calc(v-bind("props.schedule.shiftTypes.length") + 1);
   background-color: rgb(116, 116, 116);
   border-radius: 10px;
+  margin-top: var(--day-grid-gap);
 }
 
 .shiftContainer {

@@ -3,6 +3,7 @@ import DayContainer from "./DayContainer.vue"
 import type { Schedule } from "@/types/Schedule"
 import type { DateTime } from "luxon"
 import { useSchedulesStore } from "@/stores/schedules"
+import { ref } from "vue"
 
 const { fetchShifts } = useSchedulesStore()
 
@@ -13,18 +14,35 @@ const props = defineProps<{
   initialDate: DateTime
 }>()
 
+const initialDate = ref(props.initialDate)
+
 // Returns an array of the days visible in this editor
 function getDaysList(): DateTime[] {
   return Array.from({ length: props.numColumns * props.numRows }, (i, j) =>
-    props.initialDate.plus({ days: j })
+    initialDate.value.plus({ days: j })
   )
 }
 
-fetchShifts(props.schedule, props.initialDate, props.initialDate.plus({ days: props.numColumns }))
+function decrementWeek() {
+  initialDate.value = initialDate.value.minus({ weeks: 1 })
+}
+function incrementWeek() {
+  initialDate.value = initialDate.value.plus({ weeks: 1 })
+}
+
+fetchShifts(
+  props.schedule,
+  initialDate.value,
+  initialDate.value.plus({ days: props.numColumns * props.numRows })
+)
 </script>
 
 <template>
-  <div class="shiftEditor">
+  <div style="display: flex; flex-direction: column; gap: 12px; margin: 5px">
+    <img src="@/assets/upArrow.svg" width="24" height="12" @click="decrementWeek" />
+    <img src="@/assets/downArrow.svg" width="24" height="12" @click="incrementWeek" />
+  </div>
+  <div class="dayGrid">
     <DayContainer
       v-for="(date, i) in getDaysList()"
       :key="date.valueOf()"
@@ -37,7 +55,7 @@ fetchShifts(props.schedule, props.initialDate, props.initialDate.plus({ days: pr
 </template>
 
 <style scoped>
-.shiftEditor {
+.dayGrid {
   display: grid;
   column-gap: var(--day-grid-gap);
   grid-auto-flow: column;

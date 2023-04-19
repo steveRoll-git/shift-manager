@@ -5,7 +5,7 @@ import type { DateTime } from "luxon"
 import { useSchedulesStore } from "@/stores/schedules"
 import { ref, watch } from "vue"
 
-const { fetchShifts } = useSchedulesStore()
+const { fetchShiftsCached } = useSchedulesStore()
 
 const props = defineProps<{
   numColumns: number
@@ -33,11 +33,7 @@ function incrementWeek() {
 watch(
   initialDate,
   () => {
-    fetchShifts(
-      props.schedule,
-      initialDate.value,
-      initialDate.value.plus({ days: props.numColumns * props.numRows })
-    )
+    fetchShiftsCached(props.schedule, getDaysList())
   },
   { immediate: true }
 )

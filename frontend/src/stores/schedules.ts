@@ -17,6 +17,7 @@ export const useSchedulesStore = defineStore("schedules", () => {
   const schedules: Map<number, Schedule> = new Map()
   const members: Map<number, Member> = new Map()
   const shiftTypes: Map<number, ShiftType> = new Map()
+  const fetchedShifts: Map<number, Set<number>> = new Map()
 
   /**
    * According to a schedule id, fetches the data if necessary
@@ -46,6 +47,7 @@ export const useSchedulesStore = defineStore("schedules", () => {
       for (const shiftType of schedule.shiftTypes) {
         shiftTypes.set(shiftType.id, shiftType)
       }
+      fetchedShifts.set(id, new Set())
     }
     return schedules.get(id)!
   }
@@ -70,20 +72,13 @@ export const useSchedulesStore = defineStore("schedules", () => {
   }
 
   /**
-   * Fetches the schedule's shifts within the specified date range.
-   *
-   * If ranges are not provided, all of the schedule's shifts will be fetched.
+   * Fetches the schedule's shifts within the specified dates.
    * @param schedule
-   * @param minDate
-   * @param maxDate
    */
-  async function fetchShifts(schedule: Schedule, minDate?: DateTime, maxDate?: DateTime) {
+  async function fetchShifts(schedule: Schedule, dates: DateTime[]) {
     const options = new URLSearchParams()
-    if (minDate) {
-      options.append("minDate", minDate.toISODate()!)
-    }
-    if (maxDate) {
-      options.append("maxDate", maxDate.toISODate()!)
+    for (const date of dates) {
+      options.append("dates[]", date.toISODate()!)
     }
     const response = await fetch(`/api/schedules/${schedule.id}/shifts?${options}`)
     //TODO error handling if needed
@@ -96,5 +91,21 @@ export const useSchedulesStore = defineStore("schedules", () => {
     }
   }
 
-  return { getSchedule, getMemberList, fetchShifts }
+  /**
+   * Like `fetchShifts`, but only fetches dates that weren't fetched
+   * with `fetchShiftsCached` before.
+   * @param schedule
+   */
+  async function fetchShiftsCached(schedule: Schedule, dates: DateTime[]) {
+    dates = dates.filter((d) => !fetchedShifts.get(schedule.id)!.has(d.valueOf()))
+    if (dates.length == 0) {
+      return
+    }
+    for (const date of dates) {
+      fetchedShifts.get(schedule.id)!.add(date.valueOf())
+    }
+    fetchShifts(schedule, dates)
+  }
+
+  return { getSchedule, getMemberList, fetchShifts, fetchShiftsCached }
 })

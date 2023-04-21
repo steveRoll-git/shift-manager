@@ -142,7 +142,7 @@ function removeMember(shiftType: ShiftType, member: Member) {
         "Sun",
         "Mon",
         "Tue",
-        "Wen",
+        "Wed",
         "Thu",
         "Fri",
         "Sat"

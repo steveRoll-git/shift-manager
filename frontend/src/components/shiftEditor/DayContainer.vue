@@ -4,7 +4,7 @@ import type { DateTime } from "luxon"
 import PlusButton from "./PlusButton.vue"
 import NameBlock from "./NameBlock.vue"
 import type { Member } from "@/types/Member"
-import { computed, reactive, type ComputedRef } from "vue"
+import { computed, reactive, ref, type ComputedRef } from "vue"
 import type { Schedule } from "@/types/Schedule"
 import MemberSelector from "./MemberSelector.vue"
 import { vOnClickOutside } from "@vueuse/components"
@@ -25,6 +25,10 @@ const props = defineProps<{
   date: DateTime
 }>()
 
+const emit = defineEmits<{
+  (e: "membersModified"): void
+}>()
+
 const editingShift = reactive<{
   editing: boolean
   shiftType?: number
@@ -35,6 +39,8 @@ const editingShift = reactive<{
 const shiftsMap: ComputedRef<Map<number, Set<Member>>> = computed(
   () => props.schedule.shifts.get(props.date.valueOf()) ?? new Map()
 )
+
+const dayBackground = ref<HTMLDivElement | null>(null)
 
 function plusButtonClicked(shiftType: ShiftType) {
   // Don't open the member selector if all members have been added
@@ -52,16 +58,22 @@ function addMember(shiftType: ShiftType, member: Member) {
   if (shiftType.id == editingShift.shiftType && memberList.size == props.schedule.members.length) {
     editingShift.editing = false
   }
+  emit("membersModified")
 }
 
 function removeMember(shiftType: ShiftType, member: Member) {
   const memberList = getMemberList(props.schedule, props.date, shiftType)
   memberList.delete(member)
+  emit("membersModified")
 }
+
+defineExpose({
+  dayBackground
+})
 </script>
 
 <template>
-  <div class="dayBackground"></div>
+  <div class="dayBackground" ref="dayBackground"></div>
   <div class="dayHeader">
     {{ date.day }}/{{ date.month }}
     <span class="weekDayTitle">{{ t(`weekDays[${props.date.weekday % 7}]`) }}</span>

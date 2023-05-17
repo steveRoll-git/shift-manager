@@ -23,6 +23,7 @@ const props = defineProps<{
   initialRow: number
   schedule: Schedule
   date: DateTime
+  editMode: boolean
 }>()
 
 const emit = defineEmits<{
@@ -88,10 +89,10 @@ defineExpose({
       v-for="member in shiftsMap.get(shiftType.id)"
       :key="member.id"
       :member="member"
-      :show-remove-button="true"
+      :show-remove-button="editMode"
       @remove-clicked="removeMember(shiftType, member)"
     ></NameBlock>
-    <PlusButton @click="plusButtonClicked(shiftType)" />
+    <PlusButton v-if="editMode" @click="plusButtonClicked(shiftType)" />
 
     <Transition name="slide-fade">
       <MemberSelector

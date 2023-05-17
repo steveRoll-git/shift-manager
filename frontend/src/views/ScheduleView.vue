@@ -20,6 +20,8 @@ let loading = ref<boolean>(true)
 let error = ref<string | undefined>()
 let schedule: Schedule | undefined
 
+const editMode = ref<boolean>(false)
+
 onMounted(async () => {
   const result = await getSchedule(Number(route.params.id))
 
@@ -36,29 +38,25 @@ onMounted(async () => {
 <template>
   <main class="editorContainer">
     <div v-if="loading">{{ t("loading") }}</div>
-    <ShiftEditor
-      v-else-if="schedule"
-      :initialDate="DateTime.local(2023, 3, 26)"
-      :numColumns="7"
-      :numRows="7"
-      :schedule="schedule"
-    />
+    <div v-else-if="schedule">
+      <button @click="editMode = !editMode" style="margin-bottom: 15px">
+        {{ !editMode ? "Start editing" : "Stop editing" }}
+      </button>
+      <ShiftEditor
+        class="editorContainer"
+        :initialDate="DateTime.local(2023, 3, 26)"
+        :numColumns="7"
+        :numRows="7"
+        :schedule="schedule"
+        :editMode="editMode"
+      />
+    </div>
     <div v-else-if="error" class="errorBox">
       <img src="@/assets/error.svg" width="36" height="36" />
       {{ t(error) }}
     </div>
   </main>
 </template>
-
-<style>
-.editorContainer {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-</style>
 
 <i18n>
 {

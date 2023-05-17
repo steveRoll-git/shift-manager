@@ -3,7 +3,7 @@ import DayContainer from "./DayContainer.vue"
 import type { Schedule } from "@/types/Schedule"
 import type { DateTime } from "luxon"
 import { useSchedulesStore } from "@/stores/schedules"
-import { nextTick, onMounted, ref, watch } from "vue"
+import { nextTick, onMounted, onUpdated, ref, watch } from "vue"
 import smoothScroll, { type Scroller } from "@/smoothScroll"
 import { cubicOut } from "@/ease"
 
@@ -14,6 +14,7 @@ const props = defineProps<{
   numRows: number
   schedule: Schedule
   initialDate: DateTime
+  editMode: boolean
 }>()
 
 const initialDate = ref(props.initialDate)
@@ -52,7 +53,6 @@ watch(
   initialDate,
   async () => {
     await fetchShiftsCached(props.schedule, getDaysList())
-    nextTick(() => setTimeout(scrollToCenter, 1))
   },
   { immediate: true }
 )
@@ -63,34 +63,41 @@ onMounted(() => {
   }).observe(overflowContainer.value!)
   nextTick(() => setTimeout(scrollToCenter, 100))
 })
+
+onUpdated(() => {
+  setTimeout(scrollToCenter, 1)
+})
 </script>
 
 <template>
-  <div style="display: flex; flex-direction: column; gap: 12px; margin: 5px">
-    <button @click="decrementWeek">
-      <img src="@/assets/upArrow.svg" width="24" height="12" />
-    </button>
-    <button @click="incrementWeek">
-      <img src="@/assets/downArrow.svg" width="24" height="12" />
-    </button>
-  </div>
-  <div class="dayOverflowContainer" ref="overflowContainer">
-    <div class="dayGrid">
-      <DayContainer
-        v-for="(date, i) in getDaysList()"
-        :key="date.valueOf()"
-        :ref="
+  <div class="editorContainer">
+    <div style="display: flex; flex-direction: column; gap: 12px; margin: 5px">
+      <button @click="decrementWeek">
+        <img src="@/assets/upArrow.svg" width="24" height="12" />
+      </button>
+      <button @click="incrementWeek">
+        <img src="@/assets/downArrow.svg" width="24" height="12" />
+      </button>
+    </div>
+    <div class="dayOverflowContainer" ref="overflowContainer">
+      <div class="dayGrid">
+        <DayContainer
+          v-for="(date, i) in getDaysList()"
+          :key="date.valueOf()"
+          :ref="
           (e) => {
             // The type of `e` isn't really correct in this case, so this hack is needed
             dayContainers[i] = e as unknown as InstanceType<typeof DayContainer>
           }
         "
-        :column="(i % numColumns) + 1"
-        :initial-row="Math.floor(i / numColumns) * (schedule.shiftTypes.length + 1) + 1"
-        :schedule="schedule"
-        :date="date"
-        @members-modified="() => nextTick(scrollToCenter)"
-      ></DayContainer>
+          :column="(i % numColumns) + 1"
+          :initial-row="Math.floor(i / numColumns) * (schedule.shiftTypes.length + 1) + 1"
+          :schedule="schedule"
+          :date="date"
+          :edit-mode="editMode"
+          @members-modified="() => nextTick(scrollToCenter)"
+        ></DayContainer>
+      </div>
     </div>
   </div>
 </template>
@@ -113,6 +120,13 @@ onMounted(() => {
 </style>
 
 <style>
+.editorContainer {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .dayOverflowContainer {
   height: 500px;
   overflow: hidden;

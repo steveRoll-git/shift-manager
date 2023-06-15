@@ -5,18 +5,15 @@ import PlusButton from "./PlusButton.vue"
 import NameBlock from "./NameBlock.vue"
 import type { Member } from "@/types/Member"
 import { reactive, ref } from "vue"
-import { getShiftSet as _getShiftSet, shiftKey, type Schedule } from "@/types/Schedule"
+import { getShiftSet as _getShiftSet, modifyShift, shiftKey, type Schedule } from "@/types/Schedule"
 import MemberSelector from "./MemberSelector.vue"
 import { vOnClickOutside } from "@vueuse/components"
-import { useSchedulesStore } from "@/stores/schedules"
 import type { ShiftType } from "@/types/ShiftType"
 
 const { t } = useI18n({
   inheritLocale: true,
   useScope: "local"
 })
-
-const { modifyShift } = useSchedulesStore()
 
 const props = defineProps<{
   column: number

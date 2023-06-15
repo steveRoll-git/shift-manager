@@ -39,3 +39,43 @@ export function getShiftSet(schedule: Schedule, date: DateTime, shiftType: numbe
   const key = shiftKey(date, shiftType)
   return schedule.editedShifts.get(key) ?? schedule.originalShifts.get(key) ?? new Set()
 }
+
+/**
+ * Removes a shift map from `editedShifts` if it's identical to the one in `originalShifts`.
+ * @param schedule
+ * @param key
+ */
+function updateEditedMap(schedule: Schedule, key: ShiftKey) {
+  const original = schedule.originalShifts.get(key) ?? new Set()
+  const edited = schedule.editedShifts.get(key)!
+  const setsEqual = original.size == edited.size && [...original].every((m) => edited.has(m))
+  if (setsEqual) {
+    schedule.editedShifts.delete(key)
+  }
+}
+
+/**
+ * Adds or removes a member in a shift.
+ * @param action
+ */
+export function modifyShift(
+  schedule: Schedule,
+  shift: ShiftKey,
+  action: "add" | "remove",
+  member: Member
+) {
+  let memberList = schedule.editedShifts.get(shift)
+  if (!memberList) {
+    // Create the set for the edited shift if it doesn't exist.
+    memberList = new Set(schedule.originalShifts.get(shift))
+    schedule.editedShifts.set(shift, memberList)
+  }
+
+  if (action == "add") {
+    memberList.add(member)
+  } else if (action == "remove") {
+    memberList.delete(member)
+  }
+
+  updateEditedMap(schedule, shift)
+}

@@ -4,8 +4,8 @@ import type { DateTime } from "luxon"
 import PlusButton from "./PlusButton.vue"
 import NameBlock from "./NameBlock.vue"
 import type { Member } from "@/types/Member"
-import { computed, reactive, ref, type ComputedRef } from "vue"
-import type { Schedule } from "@/types/Schedule"
+import { reactive, ref } from "vue"
+import { getShiftSet as _getShiftSet, shiftKey, type Schedule } from "@/types/Schedule"
 import MemberSelector from "./MemberSelector.vue"
 import { vOnClickOutside } from "@vueuse/components"
 import { useSchedulesStore } from "@/stores/schedules"
@@ -16,7 +16,7 @@ const { t } = useI18n({
   useScope: "local"
 })
 
-const { getMemberList } = useSchedulesStore()
+const { modifyShift } = useSchedulesStore()
 
 const props = defineProps<{
   column: number
@@ -37,15 +37,15 @@ const editingShift = reactive<{
   editing: false
 })
 
-const shiftsMap: ComputedRef<Map<number, Set<Member>>> = computed(
-  () => props.schedule.shifts.get(props.date.valueOf()) ?? new Map()
-)
+function getShiftSet(shiftType: number) {
+  return _getShiftSet(props.schedule, props.date, shiftType)
+}
 
 const dayBackground = ref<HTMLDivElement | null>(null)
 
 function plusButtonClicked(shiftType: ShiftType) {
   // Don't open the member selector if all members have been added
-  if (getMemberList(props.schedule, props.date, shiftType).size == props.schedule.members.length) {
+  if (getShiftSet(shiftType.id).size == props.schedule.members.length) {
     return
   }
   editingShift.editing = true
@@ -53,18 +53,21 @@ function plusButtonClicked(shiftType: ShiftType) {
 }
 
 function addMember(shiftType: ShiftType, member: Member) {
-  const memberList = getMemberList(props.schedule, props.date, shiftType)
-  memberList.add(member)
+  modifyShift(props.schedule, shiftKey(props.date, shiftType.id), "add", member)
+
   // Close the member selector when all members have been added
-  if (shiftType.id == editingShift.shiftType && memberList.size == props.schedule.members.length) {
+  if (
+    shiftType.id == editingShift.shiftType &&
+    getShiftSet(shiftType.id).size == props.schedule.members.length
+  ) {
     editingShift.editing = false
   }
+
   emit("membersModified")
 }
 
 function removeMember(shiftType: ShiftType, member: Member) {
-  const memberList = getMemberList(props.schedule, props.date, shiftType)
-  memberList.delete(member)
+  modifyShift(props.schedule, shiftKey(props.date, shiftType.id), "remove", member)
   emit("membersModified")
 }
 
@@ -82,11 +85,14 @@ defineExpose({
   <div
     v-for="(shiftType, i) in schedule.shiftTypes"
     :key="shiftType.id"
-    class="shiftContainer"
+    :class="{
+      shiftContainer: true,
+      modifiedShift: schedule.editedShifts.has(shiftKey(date, shiftType.id))
+    }"
     :style="{ gridRow: props.initialRow + 1 + i }"
   >
     <NameBlock
-      v-for="member in shiftsMap.get(shiftType.id)"
+      v-for="member in getShiftSet(shiftType.id)"
       :key="member.id"
       :member="member"
       :show-remove-button="editMode"
@@ -145,6 +151,10 @@ defineExpose({
   flex-wrap: wrap;
   align-items: center;
   align-content: baseline;
+}
+
+.modifiedShift {
+  background-color: lightyellow;
 }
 </style>
 

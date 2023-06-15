@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { useSchedulesStore } from "@/stores/schedules"
 import type { Member } from "@/types/Member"
-import type { Schedule } from "@/types/Schedule"
+import { getShiftSet, type Schedule } from "@/types/Schedule"
 import type { ShiftType } from "@/types/ShiftType"
 import type { DateTime } from "luxon"
 import { computed } from "vue"
@@ -17,9 +16,7 @@ const emit = defineEmits<{
   (e: "memberClick", member: Member): void
 }>()
 
-const { getMemberList } = useSchedulesStore()
-
-const memberList = computed(() => getMemberList(props.schedule, props.date, props.shiftType))
+const memberList = computed(() => getShiftSet(props.schedule, props.date, props.shiftType.id))
 
 /**
  * List of members that _aren't_ currently in this shift

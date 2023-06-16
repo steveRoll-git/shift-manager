@@ -5,7 +5,7 @@ import { useSchedulesStore } from "@/stores/schedules"
 import { useRoute } from "vue-router"
 import { useI18n } from "vue-i18n"
 import swal from "sweetalert"
-import axios from "axios"
+import axios, { type AxiosResponse } from "axios"
 import { unpackShiftKey, type Schedule } from "@/types/Schedule"
 import { onMounted, ref } from "vue"
 
@@ -62,9 +62,15 @@ async function publishChanges() {
 
   console.log(diffs)
 
-  const result = await axios.put(`/api/schedules/${schedule!.id}/shifts`, diffs)
+  let result: AxiosResponse | null = null
+  let error = undefined
+  try {
+    result = await axios.put(`/api/schedules/${schedule!.id}/shifts`, diffs)
+  } catch (e) {
+    error = e
+  }
 
-  if (result.status == 200) {
+  if (result && result.status == 200) {
     // Edited shifts now become the original shifts
     for (const newShift of schedule!.editedShifts) {
       schedule!.originalShifts.set(...newShift)
@@ -77,7 +83,7 @@ async function publishChanges() {
     })
   } else {
     swal({
-      text: t("published.error.text"),
+      text: t("published.error.text") + "\n" + String(error),
       icon: "error"
     })
   }

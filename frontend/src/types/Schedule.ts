@@ -32,7 +32,16 @@ export interface Schedule {
 }
 
 export function shiftKey(date: DateTime, shiftType: number): ShiftKey {
-  return (date.valueOf() + " " + shiftType) as ShiftKey
+  return (date.toISODate() + " " + shiftType) as ShiftKey
+}
+
+export function unpackShiftKey(key: ShiftKey): {
+  shiftTypeId: number
+  date: string
+} {
+  const [date, shiftTypeStr] = key.split(" ")
+  const shiftTypeId = parseInt(shiftTypeStr)
+  return { date, shiftTypeId }
 }
 
 export function getShiftSet(schedule: Schedule, date: DateTime, shiftType: number) {

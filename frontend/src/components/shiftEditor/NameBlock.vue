@@ -28,11 +28,12 @@ const emit = defineEmits<{
   width: fit-content;
   display: flex;
   align-items: center;
+  padding-inline-end: 6px;
 }
 
 .removeButton {
-  width: calc(var(--name-font-size) * 0.7);
-  margin: 2px;
+  width: calc(var(--name-font-size) * 0.6);
+  margin: 0px 6px;
   cursor: pointer;
 }
 </style>

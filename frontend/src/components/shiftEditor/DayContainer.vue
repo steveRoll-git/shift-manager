@@ -118,7 +118,7 @@ defineExpose({
 }
 
 .dayHeader {
-  background-color: rgb(201, 255, 190);
+  background-color: rgb(190, 225, 255);
   margin: 0 0 var(--shift-sections-gap);
   grid-row: v-bind("props.initialRow");
   grid-column: v-bind("props.column");

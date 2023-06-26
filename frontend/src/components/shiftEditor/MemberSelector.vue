@@ -40,16 +40,17 @@ const otherMembers = computed(() => props.schedule.members.filter((m) => !member
 .memberSelector {
   position: absolute;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   left: 0;
   right: 0;
   margin: auto;
   top: calc(100% + 5px);
   width: 100%;
 
-  background-color: rgb(151, 239, 255);
-  border: 2px solid black;
+  background-color: rgb(255, 255, 255);
+  border-top: 5px solid rgb(153, 209, 255);
   border-radius: 6px;
+  box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.3);
   z-index: 2;
   padding: 2px;
 }

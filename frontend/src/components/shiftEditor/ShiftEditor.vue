@@ -107,7 +107,7 @@ onUpdated(() => {
   display: grid;
   column-gap: var(--day-grid-gap);
   grid-auto-flow: column;
-  grid-template-columns: repeat(v-bind("props.numColumns"), 200px);
+  grid-template-columns: repeat(v-bind("props.numColumns"), 220px);
   grid-template-rows: repeat(
     calc(v-bind("(props.schedule.shiftTypes.length + 1) * props.numRows")),
     max-content

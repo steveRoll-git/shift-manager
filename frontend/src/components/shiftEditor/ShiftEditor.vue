@@ -113,7 +113,7 @@ onUpdated(() => {
     max-content
   );
   user-select: none;
-  padding: 100px 0;
+  padding: 100px 5px;
 
   font-size: 20px;
 }

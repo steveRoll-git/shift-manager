@@ -118,7 +118,7 @@ defineExpose({
 }
 
 .dayHeader {
-  background-color: rgb(41, 170, 245);
+  background-color: rgb(201, 255, 190);
   margin: 0 0 var(--shift-sections-gap);
   grid-row: v-bind("props.initialRow");
   grid-column: v-bind("props.column");
@@ -132,14 +132,15 @@ defineExpose({
 .dayBackground {
   grid-column: v-bind("props.column");
   grid-row: v-bind("props.initialRow") / span calc(v-bind("props.schedule.shiftTypes.length") + 1);
-  background-color: rgb(116, 116, 116);
+  background-color: rgb(234, 234, 234);
+  box-shadow: 0px 2px 3px 0px rgba(0, 0, 0, 0.31);
   border-radius: 10px;
   margin-top: var(--day-grid-gap);
 }
 
 .shiftContainer {
   grid-column: v-bind("props.column");
-  background-color: lightblue;
+  background-color: rgb(255, 255, 255);
   border-radius: 5px;
   padding: 2px;
   margin: 0 var(--shift-sections-gap) var(--shift-sections-gap);

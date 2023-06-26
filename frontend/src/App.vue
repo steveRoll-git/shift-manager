@@ -15,12 +15,10 @@ if (isRtl(locale.value as unknown as string)) {
 
 <template>
   <header>
-    <div class="wrapper">
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/schedule/2">Test Schedule</RouterLink>
-      </nav>
-    </div>
+    <nav>
+      <RouterLink to="/">Home</RouterLink>
+      <RouterLink to="/schedule/2">Test Schedule</RouterLink>
+    </nav>
   </header>
 
   <div class="mainContent">
@@ -33,7 +31,7 @@ if (isRtl(locale.value as unknown as string)) {
   flex: 1 1 auto;
 }
 
-.wrapper nav {
+nav {
   display: flex;
   gap: 5px;
   padding: 5px;

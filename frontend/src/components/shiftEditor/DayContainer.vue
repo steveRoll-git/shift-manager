@@ -147,7 +147,8 @@ defineExpose({
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  align-content: baseline;
+  align-content: center;
+  justify-content: center;
 }
 
 .modifiedShift {

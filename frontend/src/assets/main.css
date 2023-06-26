@@ -5,7 +5,7 @@
 
 #app {
   display: flex;
-  flex-flow: column;
+  flex-direction: column;
   height: 100vh;
   margin: 0;
 }

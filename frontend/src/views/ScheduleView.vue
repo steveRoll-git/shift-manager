@@ -103,15 +103,17 @@ onMounted(async () => {
 </script>
 
 <template>
-  <main class="editorContainer">
+  <main class="scheduleViewMain">
     <div v-if="loading">{{ t("loading") }}</div>
-    <div v-else-if="schedule">
-      <button @click="editMode = !editMode" style="margin-bottom: 15px; margin-inline: 15px">
-        {{ !editMode ? "Start editing" : "Stop editing" }}
-      </button>
-      <button v-if="editMode" :disabled="schedule.editedShifts.size == 0" @click="publishChanges">
-        Publish Changes
-      </button>
+    <template v-else-if="schedule">
+      <div class="scheduleToolbar">
+        <button @click="editMode = !editMode">
+          {{ !editMode ? "Start editing" : "Stop editing" }}
+        </button>
+        <button v-if="editMode" :disabled="schedule.editedShifts.size == 0" @click="publishChanges">
+          Publish Changes
+        </button>
+      </div>
       <ShiftEditor
         class="editorContainer"
         :initialDate="DateTime.local(2023, 3, 26)"
@@ -120,13 +122,27 @@ onMounted(async () => {
         :schedule="schedule"
         :editMode="editMode"
       />
-    </div>
+    </template>
     <div v-else-if="error" class="errorBox">
       <img src="@/assets/error.svg" width="36" height="36" />
       {{ t(error) }}
     </div>
   </main>
 </template>
+
+<style>
+.scheduleViewMain {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.scheduleToolbar {
+  display: flex;
+  width: 50%;
+}
+</style>
 
 <i18n>
 {

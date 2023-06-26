@@ -121,14 +121,15 @@ onUpdated(() => {
 
 <style>
 .editorContainer {
-  height: 100%;
+  height: 0px;
+  flex-grow: 1;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .dayOverflowContainer {
-  height: 500px;
+  height: 100%;
   overflow: hidden;
 }
 </style>

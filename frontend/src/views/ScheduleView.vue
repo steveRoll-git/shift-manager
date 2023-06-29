@@ -115,7 +115,6 @@ onMounted(async () => {
         </button>
       </div>
       <ShiftEditor
-        class="editorContainer"
         :initialDate="DateTime.local(2023, 3, 26)"
         :numColumns="7"
         :numRows="7"

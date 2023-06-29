@@ -107,7 +107,7 @@ onUpdated(() => {
   display: grid;
   column-gap: var(--day-grid-gap);
   grid-auto-flow: column;
-  grid-template-columns: repeat(v-bind("props.numColumns"), 220px);
+  grid-template-columns: repeat(v-bind("props.numColumns"), 1fr);
   grid-template-rows: repeat(
     calc(v-bind("(props.schedule.shiftTypes.length + 1) * props.numRows")),
     max-content
@@ -121,6 +121,7 @@ onUpdated(() => {
 
 <style>
 .editorContainer {
+  width: 90%;
   height: 0px;
   flex-grow: 1;
   display: flex;
@@ -129,6 +130,7 @@ onUpdated(() => {
 }
 
 .dayOverflowContainer {
+  flex-grow: 1;
   height: 100%;
   overflow: hidden;
 }

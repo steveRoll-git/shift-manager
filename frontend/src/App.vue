@@ -79,7 +79,7 @@ nav > * {
 }
 
 .sidebar:not(.collapsed) {
-  box-shadow: 7px 0px 6px -3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 0.1);
 }
 
 .overlay {

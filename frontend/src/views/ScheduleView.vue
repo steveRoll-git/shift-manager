@@ -90,7 +90,7 @@ async function publishChanges() {
 }
 
 onMounted(async () => {
-  const result = await getSchedule(Number(route.params.id))
+  const result = await getSchedule(Number(route.params.scheduleId))
 
   loading.value = false
 

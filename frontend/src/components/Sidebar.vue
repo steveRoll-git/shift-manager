@@ -1,11 +1,35 @@
 <script setup lang="ts">
+import { useSchedulesStore } from "@/stores/schedules"
+import type { Schedule } from "@/types/Schedule"
+import { ref, watch } from "vue"
 import { useI18n } from "vue-i18n"
+import { useRoute } from "vue-router"
 
 const { t } = useI18n()
+
+const route = useRoute()
+
+const { getSchedule } = useSchedulesStore()
 
 const props = defineProps<{
   open: boolean
 }>()
+
+const schedule = ref<Schedule | null>(null)
+
+watch(
+  () => route.params.scheduleId,
+  async (value) => {
+    if (value) {
+      const loadedSchedule = await getSchedule(Number(value))
+      if (typeof loadedSchedule != "string") {
+        schedule.value = loadedSchedule
+      }
+    } else {
+      schedule.value = null
+    }
+  }
+)
 
 const e = defineEmits<{
   overlayClicked: []
@@ -15,21 +39,21 @@ const e = defineEmits<{
 <template>
   <div :class="{ overlay: true, open }" @click="e('overlayClicked')"></div>
   <div :class="{ sidebar: true, collapsed: !open }">
-    <div class="sidebarTitle">
-      {{}}
-    </div>
-    <div class="sidebarItem">
-      <img src="@/assets/sidebar/schedule.png" />
-      {{ t("schedule") }}
-    </div>
-    <div class="sidebarItem">
-      <img src="@/assets/sidebar/members.png" />
-      {{ t("members") }}
-    </div>
-    <div class="sidebarItem">
-      <img src="@/assets/sidebar/settings.png" />
-      {{ t("settings") }}
-    </div>
+    <template v-if="route.params.scheduleId && schedule">
+      <div class="sidebarTitle">{{ schedule.name }}</div>
+      <div class="sidebarItem">
+        <img src="@/assets/sidebar/schedule.png" />
+        {{ t("shifts") }}
+      </div>
+      <div class="sidebarItem">
+        <img src="@/assets/sidebar/members.png" />
+        {{ t("members") }}
+      </div>
+      <div class="sidebarItem">
+        <img src="@/assets/sidebar/settings.png" />
+        {{ t("settings") }}
+      </div>
+    </template>
   </div>
 </template>
 
@@ -56,6 +80,11 @@ const e = defineEmits<{
 
 .sidebar:not(.collapsed) {
   box-shadow: 0px 0px 6px 3px rgba(0, 0, 0, 0.1);
+}
+
+.sidebarTitle {
+  font-size: 35px;
+  margin: 10px;
 }
 
 .sidebarItem {
@@ -95,12 +124,12 @@ const e = defineEmits<{
 <i18n>
   {
     "en": {
-      "schedule": "Schedule",
+      "shifts": "Shifts",
       "members": "Members",
       "settings": "Settings",
     },
     "he": {
-      "schedule": "משמרות",
+      "shifts": "משמרות",
       "members": "צוות",
       "settings": "הגדרות",
     }

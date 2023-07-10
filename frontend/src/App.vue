@@ -25,7 +25,7 @@ if (isRtl(locale.value as unknown as string)) {
 </script>
 
 <template>
-  <Sidebar :open="sidebarOpen" @overlay-clicked="closeSidebar" />
+  <Sidebar :open="sidebarOpen" @close-sidebar="closeSidebar" />
 
   <header>
     <nav>

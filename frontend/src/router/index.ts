@@ -13,6 +13,16 @@ const router = createRouter({
       path: "/schedule/:scheduleId",
       name: "schedule",
       component: () => import("../views/ScheduleView.vue")
+    },
+    {
+      path: "/schedule/:scheduleId/settings",
+      name: "scheduleSettings",
+      component: () => import("../views/SettingsView.vue")
+    },
+    {
+      path: "/schedule/:scheduleId/members",
+      name: "scheduleMembers",
+      component: () => import("../views/MembersView.vue")
     }
   ]
 })

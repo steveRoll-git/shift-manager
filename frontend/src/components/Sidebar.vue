@@ -17,6 +17,24 @@ const props = defineProps<{
 
 const schedule = ref<Schedule | null>(null)
 
+const scheduleButtons = [
+  {
+    to: "schedule",
+    img: "/src/assets/sidebar/schedule.png",
+    text: "shifts"
+  },
+  {
+    to: "scheduleMembers",
+    img: "/src/assets/sidebar/members.png",
+    text: "members"
+  },
+  {
+    to: "scheduleSettings",
+    img: "/src/assets/sidebar/settings.png",
+    text: "settings"
+  }
+]
+
 watch(
   () => route.params.scheduleId,
   async (value) => {
@@ -32,27 +50,26 @@ watch(
 )
 
 const e = defineEmits<{
-  overlayClicked: []
+  closeSidebar: []
 }>()
 </script>
 
 <template>
-  <div :class="{ overlay: true, open }" @click="e('overlayClicked')"></div>
+  <div :class="{ overlay: true, open }" @click="e('closeSidebar')"></div>
   <div :class="{ sidebar: true, collapsed: !open }">
     <template v-if="route.params.scheduleId && schedule">
       <div class="sidebarTitle">{{ schedule.name }}</div>
-      <div class="sidebarItem">
-        <img src="@/assets/sidebar/schedule.png" />
-        {{ t("shifts") }}
-      </div>
-      <div class="sidebarItem">
-        <img src="@/assets/sidebar/members.png" />
-        {{ t("members") }}
-      </div>
-      <div class="sidebarItem">
-        <img src="@/assets/sidebar/settings.png" />
-        {{ t("settings") }}
-      </div>
+      <RouterLink
+        v-for="sidebarButton in scheduleButtons"
+        :key="sidebarButton.to"
+        :to="{ name: sidebarButton.to, params: { scheduleId: schedule.id } }"
+        @click="e('closeSidebar')"
+        class="sidebarItem"
+        :class="{ current: route.name == sidebarButton.to }"
+      >
+        <img :src="sidebarButton.img" />
+        {{ t(sidebarButton.text) }}
+      </RouterLink>
     </template>
   </div>
 </template>
@@ -98,6 +115,12 @@ const e = defineEmits<{
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  text-decoration: none;
+  color: inherit;
+}
+.sidebarItem.current {
+  border-inline-start: 8px solid rgb(82, 161, 192);
+  background-color: rgba(255, 255, 255, 0.288);
 }
 .sidebarItem:hover {
   background-color: rgba(255, 255, 255, 0.414);

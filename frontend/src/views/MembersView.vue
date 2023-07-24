@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ScheduleLoader from "@/components/ScheduleLoader.vue"
+import MemberCard from "@/components/membersView/MemberCard.vue"
 import { useScheduleFromRoute } from "@/composables/schedule"
 import { useI18n } from "vue-i18n"
 
@@ -11,25 +12,17 @@ const { loading, error, schedule } = useScheduleFromRoute()
 <template>
   <main class="membersViewMain">
     <h1>{{ t("title") }}</h1>
-    <ScheduleLoader :loading="loading" :error="error" :schedule="schedule">
+    <ScheduleLoader :loading="loading" :error="error" :schedule="schedule" v-slot="loaded">
       <div class="membersTable">
-        <span class="membersHeaderText">
-          {{ t("header.name") }}
-        </span>
-        <span class="membersHeaderText">
-          {{ t("header.permissions") }}
-        </span>
-        <span class="membersHeaderText">
-          {{ t("header.email") }}
-        </span>
+        <MemberCard v-for="member in loaded.schedule.members" :key="member.id" :member="member" />
       </div>
     </ScheduleLoader>
   </main>
 </template>
 
-<style>
+<style scoped>
 .membersViewMain {
-  padding: 0 20%;
+  padding: 0 30%;
 }
 .membersViewMain > h1 {
   font-size: 40px;
@@ -37,12 +30,9 @@ const { loading, error, schedule } = useScheduleFromRoute()
 }
 
 .membersTable {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr) 60px; /* TODO */
-}
-
-.membersHeaderText {
-  font-size: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
 }
 </style>
 

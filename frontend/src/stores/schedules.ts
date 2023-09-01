@@ -5,6 +5,7 @@ import { DateTime } from "luxon"
 import type { ShiftType } from "@/types/ShiftType"
 import type { GetScheduleError } from "@/types/errors/GetScheduleError"
 import type { Member } from "@/types/Member"
+import { useFetch } from "@vueuse/core"
 
 type GetShiftsResponse = {
   scheduleId: number
@@ -92,5 +93,33 @@ export const useSchedulesStore = defineStore("schedules", () => {
     fetchShifts(schedule, dates)
   }
 
-  return { getSchedule, fetchShifts, fetchShiftsCached }
+  /**
+   * Adds a new member to the schedule.
+   * @param schedule
+   * @param info
+   */
+  async function addMember(
+    schedule: Schedule,
+    info: { name: string }
+  ): Promise<{ ok: boolean; error?: any }> {
+    const { data, error } = await useFetch<{ memberId: number }>(
+      `/api/schedules/${schedule.id}/members`
+    )
+      .post({ ...info })
+      .json()
+
+    if (data.value) {
+      const newMember = {
+        id: data.value.memberId,
+        name: info.name
+      }
+      schedule.members.push(newMember)
+      members.set(newMember.id, newMember)
+      return { ok: true }
+    } else {
+      return { ok: false, error }
+    }
+  }
+
+  return { getSchedule, fetchShifts, fetchShiftsCached, addMember }
 })

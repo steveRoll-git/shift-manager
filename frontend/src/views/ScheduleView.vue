@@ -4,10 +4,10 @@ import ShiftEditor from "@/components/shiftEditor/ShiftEditor.vue"
 import ScheduleLoader from "@/components/ScheduleLoader.vue"
 import { useI18n } from "vue-i18n"
 import swal from "sweetalert"
-import axios, { type AxiosResponse } from "axios"
 import { unpackShiftKey } from "@/types/Schedule"
 import { ref } from "vue"
 import { useScheduleFromRoute } from "@/composables/schedule"
+import * as http from "@/http"
 
 type Shift = {
   shiftTypeId: number
@@ -54,17 +54,9 @@ async function publishChanges() {
     }
   }
 
-  console.log(diffs)
+  const response = await http.put(`/api/schedules/${schedule.value!.id}/shifts`, diffs)
 
-  let result: AxiosResponse | null = null
-  let error = undefined
-  try {
-    result = await axios.put(`/api/schedules/${schedule.value!.id}/shifts`, diffs)
-  } catch (e) {
-    error = e
-  }
-
-  if (result && result.status == 200) {
+  if (response.ok) {
     // Edited shifts now become the original shifts
     for (const newShift of schedule.value!.editedShifts) {
       schedule.value!.originalShifts.set(...newShift)
@@ -77,7 +69,7 @@ async function publishChanges() {
     })
   } else {
     swal({
-      text: t("published.error.text") + "\n" + String(error),
+      text: `${t("published.error.text")}\n${response.statusCode} ${String(response.error)}`, // TODO stringify the error into something more useful
       icon: "error"
     })
   }

@@ -5,7 +5,7 @@ import { DateTime } from "luxon"
 import type { ShiftType } from "@/types/ShiftType"
 import type { GetScheduleError } from "@/types/errors/GetScheduleError"
 import type { Member } from "@/types/Member"
-import { useFetch } from "@vueuse/core"
+import * as http from "@/http"
 
 type GetShiftsResponse = {
   scheduleId: number
@@ -28,13 +28,13 @@ export const useSchedulesStore = defineStore("schedules", () => {
    */
   async function getSchedule(id: number): Promise<Schedule | GetScheduleError> {
     if (!schedules.has(id)) {
-      const response = await fetch(`/api/schedules/${id}`)
-      if (response.status == 404) {
+      const response = await http.get(`/api/schedules/${id}`)
+      if (response.statusCode == 404) {
         return "scheduleNotFound"
       } else if (!response.ok) {
         return "serverError"
       }
-      const schedule = await response.json()
+      const schedule = response.data
       schedules.set(
         id,
         reactive({
@@ -63,9 +63,13 @@ export const useSchedulesStore = defineStore("schedules", () => {
     for (const date of dates) {
       options.append("dates[]", date.toISODate()!)
     }
-    const response = await fetch(`/api/schedules/${schedule.id}/shifts?${options}`)
-    //TODO error handling if needed
-    const shifts: GetShiftsResponse = (await response.json()).map((o: any) => {
+    const response = await http.get(`/api/schedules/${schedule.id}/shifts?${options}`)
+    if (!response.ok) {
+      //TODO actual error handling (show toast alert maybe?)
+      console.error("fetching shifts went wrong")
+      return
+    }
+    const shifts: GetShiftsResponse = response.data.map((o: any) => {
       return { ...o, date: DateTime.fromISO(o.date) }
     })
     for (const shift of shifts) {
@@ -102,22 +106,18 @@ export const useSchedulesStore = defineStore("schedules", () => {
     schedule: Schedule,
     info: { name: string }
   ): Promise<{ ok: boolean; error?: any }> {
-    const { data, error } = await useFetch<{ memberId: number }>(
-      `/api/schedules/${schedule.id}/members`
-    )
-      .post({ ...info })
-      .json()
+    const response = await http.post(`/api/schedules/${schedule.id}/members`, info)
 
-    if (data.value) {
+    if (response.ok) {
       const newMember = {
-        id: data.value.memberId,
+        id: response.data.memberId,
         name: info.name
       }
       schedule.members.push(newMember)
       members.set(newMember.id, newMember)
       return { ok: true }
     } else {
-      return { ok: false, error }
+      return { ok: false, error: response.error }
     }
   }
 

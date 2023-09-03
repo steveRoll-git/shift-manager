@@ -85,11 +85,11 @@ onUpdated(() => {
           v-for="(date, i) in getDaysList()"
           :key="date.valueOf()"
           :ref="
-          (e) => {
-            // The type of `e` isn't really correct in this case, so this hack is needed
-            dayContainers[i] = e as unknown as InstanceType<typeof DayContainer>
-          }
-        "
+            (e) => {
+              // The type of `e` isn't really correct in this case, so this hack is needed
+              dayContainers[i] = e as unknown as InstanceType<typeof DayContainer>
+            }
+          "
           :column="(i % numColumns) + 1"
           :initial-row="Math.floor(i / numColumns) * (schedule.shiftTypes.length + 1) + 1"
           :schedule="schedule"

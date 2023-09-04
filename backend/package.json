@@ -52,7 +52,7 @@
     "prettier": "^3.0.3",
     "typescript": "~5.2",
     "youch": "^3.2.3",
-    "youch-terminal": "^2.2.0"
+    "youch-terminal": "^2.2.2"
   },
   "dependencies": {
     "@adonisjs/auth": "^8.2.3",
